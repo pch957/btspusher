@@ -40,30 +40,29 @@ class PusherComponent(ApplicationSession):
 
     def onDisconnect(self):
         PusherComponent.instance = None
-        print("leave")
+        print("lost connect")
 
 
 class Pusher(object):
     def __init__(self, loop, login_info=None):
         url = u"wss://pusher.btsbots.com/ws"
         realm = u"realm1"
-        PusherComponent.future = asyncio.Future()
-        runner = ApplicationRunner(url, realm)
-        runner.run(PusherComponent)
-        loop.run_until_complete(
-            asyncio.wait_for(PusherComponent.future, None))
+        try:
+            PusherComponent.future = asyncio.Future()
+            runner = ApplicationRunner(url, realm)
+            runner.run(PusherComponent)
+            loop.run_until_complete(
+                asyncio.wait_for(PusherComponent.future, 10))
+        except Exception:
+            print("can't connect to pusher.btsbots.com")
 
-    def publish(self, topic, value):
+    def publish(self, *args, **kwargs):
         if PusherComponent.instance:
-            PusherComponent.instance.publish(topic, value)
-        else:
-            print("can't publish, lost connect")
+            PusherComponent.instance.publish(*args, **kwargs)
 
     def subscribe(self, handler, topic):
         if PusherComponent.instance:
             asyncio.wait(PusherComponent.instance.subscribe(handler, topic))
-        else:
-            print("can't publish, lost connect")
 
 
 if __name__ == '__main__':
