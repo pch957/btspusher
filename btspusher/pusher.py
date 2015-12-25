@@ -48,6 +48,8 @@ class Pusher(object):
         url = u"wss://pusher.btsbots.com/ws"
         realm = u"realm1"
         try:
+            if login_info:
+                PusherComponent.login(login_info)
             PusherComponent.future = asyncio.Future()
             runner = ApplicationRunner(url, realm)
             runner.run(PusherComponent)
