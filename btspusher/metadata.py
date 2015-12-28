@@ -8,7 +8,7 @@ Information describing the project.
 package = 'btspusher'
 project = "btspusher"
 project_no_spaces = project.replace(' ', '')
-version = '0.0.4'
+version = '0.0.5'
 description = 'push service for Bitshares'
 authors = ['Alt']
 authors_string = ', '.join(authors)

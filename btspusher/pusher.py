@@ -59,12 +59,27 @@ class Pusher(object):
             print("can't connect to pusher.btsbots.com")
 
     def publish(self, *args, **kwargs):
+        kwargs["__t"] = args[0]
         if PusherComponent.instance:
             PusherComponent.instance.publish(*args, **kwargs)
 
-    def subscribe(self, handler, topic):
+    def sync_subscribe(self, *args, **kwargs):
         if PusherComponent.instance:
-            asyncio.wait(PusherComponent.instance.subscribe(handler, topic))
+            asyncio.wait(PusherComponent.instance.subscribe(*args, **kwargs))
+
+    @asyncio.coroutine
+    def subscribe(self, *args, **kwargs):
+        if PusherComponent.instance:
+            yield from PusherComponent.instance.subscribe(*args, **kwargs)
+
+    def sync_call(self, *args, **kwargs):
+        if PusherComponent.instance:
+            asyncio.wait(PusherComponent.instance.call(*args, **kwargs))
+
+    @asyncio.coroutine
+    def call(self, *args, **kwargs):
+        if PusherComponent.instance:
+            yield from PusherComponent.instance.call(*args, **kwargs)
 
 
 if __name__ == '__main__':
@@ -74,8 +89,8 @@ if __name__ == '__main__':
     def on_event(i):
         print("Got event: {}".format(i))
 
-    # bts_pusher.subscribe(on_event, "public.test")
-    bts_pusher.publish("public.test", "abc")
+    # bts_pusher.sync_subscribe(on_event, "public.test")
+    bts_pusher.publish("public.test", "hello", a="bb")
 
     loop.run_forever()
     loop.close()
