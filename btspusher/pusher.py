@@ -9,6 +9,8 @@ class PusherComponent(ApplicationSession):
     future = None  # a future from asyncio
     instance = None
     login_info = None
+    cb = None
+    co = None
 
     @staticmethod
     def login(login_info):
@@ -17,10 +19,14 @@ class PusherComponent(ApplicationSession):
     @asyncio.coroutine
     def onJoin(self, details):
         print("join")
+        PusherComponent.instance = self
         if self.future:
             self.future.set_result(1)
             self.future = None
-            PusherComponent.instance = self
+        if self.cb:
+            self.cb(self)
+        if self.co:
+            yield from self.co(self)
 
     def onConnect(self):
         print("connected")
@@ -44,13 +50,16 @@ class PusherComponent(ApplicationSession):
 
 
 class Pusher(object):
-    def __init__(self, loop, login_info=None):
+    def __init__(
+            self, loop, login_info=None, co=None, cb=None):
         url = u"wss://pusher.btsbots.com/ws"
         realm = u"realm1"
         try:
             if login_info:
                 PusherComponent.login(login_info)
             PusherComponent.future = asyncio.Future()
+            PusherComponent.co = co
+            PusherComponent.cb = cb
             runner = ApplicationRunner(url, realm)
             runner.run(PusherComponent)
             loop.run_until_complete(
