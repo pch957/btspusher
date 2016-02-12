@@ -51,7 +51,7 @@ __all__ = (
 class ApplicationRunner(object):
 
     def __init__(self, url, realm, extra=None, serializers=None,
-                 debug=False, debug_wamp=False, debug_app=False,
+                 debug=False, debug_app=False,
                  ssl=None):
 
         assert(type(url) == six.text_type)
@@ -62,7 +62,6 @@ class ApplicationRunner(object):
         self.extra = extra or dict()
         self.serializers = serializers
         self.debug = debug
-        self.debug_wamp = debug_wamp
         self.debug_app = debug_app
         self.ssl = ssl
 
@@ -95,7 +94,7 @@ class ApplicationRunner(object):
         # 2) create a WAMP-over-WebSocket transport client factory
         transport_factory = WampWebSocketClientFactory(
             create, url=self.url, serializers=self.serializers,
-            debug=self.debug, debug_wamp=self.debug_wamp)
+            debug=self.debug)
 
         # 3) start the client
         loop = asyncio.get_event_loop()
