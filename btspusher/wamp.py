@@ -30,7 +30,7 @@ import signal
 import six
 
 from autobahn.wamp.types import ComponentConfig
-from autobahn.websocket.protocol import parseWsUrl
+from autobahn.websocket.util import parse_url
 from autobahn.asyncio.websocket import WampWebSocketClientFactory
 
 try:
@@ -79,7 +79,7 @@ class ApplicationRunner(object):
                 session.debug_app = self.debug_app
                 return session
 
-        isSecure, host, port, resource, path, params = parseWsUrl(self.url)
+        isSecure, host, port, resource, path, params = parse_url(self.url)
 
         if self.ssl is None:
             ssl = isSecure
